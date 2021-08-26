@@ -1,0 +1,21 @@
+{% extends 'base.jinja2' %}
+
+{% block content %}
+  <header class="w3-container w3-indigo">
+    <h2>Audiobook</h2>
+  </header>
+
+  <div class="w3-container w3-panel w3-white">
+    <h3>{{ book.location }}</h3>
+    <ul>
+      {% for f in book.files %}
+        {% if loop.index -1 == book.play_file_index %}
+          {% set color = "w3-pale-green" %}
+        {% else %}
+          {% set color = "w3-white" %}
+        {% endif %}
+      <li class="{{ color }}"><a href="{{ url_for('play_file', book_id=book.id, file_index=loop.index-1) }}">{{ f.split("/")[-1:][0] }}</a></li>
+    {% endfor %}
+    </ul>
+
+{% endblock %}

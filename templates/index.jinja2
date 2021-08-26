@@ -1,0 +1,40 @@
+{% extends 'base.jinja2' %}
+
+{% block content %}
+  <header class="w3-container w3-indigo">
+    <h2>Index</h2>
+  </header>
+
+  {% for book in books %}
+    {% if book.id == active_book.id %}
+      {% set color = "w3-pale-green" %}
+    {% else %}
+      {% set color = "w3-white" %}
+    {% endif %}
+    <div class="w3-container w3-panel {{ color }}">
+      <p>
+        <h4><a href="{{ url_for('book', book_id=book.id) }}">{{ book.location }}</a></h4>
+        {% if book.id == active_book.id %}
+          <a href="{{ url_for('stop') }}"><i class="fa fa-fw fa-pause"></i></a>
+        {% endif %}
+        {% if book.id != active_book.id %}
+          <a href="{{ url_for('play', book_id=book.id) }}"><i class="fa fa-fw fa-play"></i></a>
+        {% endif %}
+        {% if book.files %}
+          {{ book.files[book.play_file_index].split("/")[-1:][0] }}
+        {% endif %}
+      </p>
+    </div>
+  {% endfor %}
+
+  <div class="w3-container w3-panel w3-white">
+    <h2>Add audiobook</h2>
+    <p>
+      <label>Audiobook location:</label>
+      <input class="w3-input"></input><br/>
+      <button class="w3-btn w3-blue"><i class="fa fa-fw fa-plus"></i> Add</button>
+    </p>
+  </div>
+
+
+{% endblock %}
