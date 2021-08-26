@@ -27,12 +27,18 @@ class Audiobook(db.Document):
     seconds_seek = db.IntField(default=0)
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def index():
-    books = Audiobook.objects
-    return flask.render_template(
-        "index.jinja2", books=books, active_book=active_book, humanize=humanize
-    )
+    if flask.request.method == "POST":
+        location = flask.request.form.get("location")
+        a = Audiobook(location=location)
+        a.save()
+        return flask.redirect(flask.url_for("index"))
+    if flask.request.method == "GET":
+        books = Audiobook.objects
+        return flask.render_template(
+            "index.jinja2", books=books, active_book=active_book, humanize=humanize
+        )
 
 
 @app.route("/book/<book_id>")
@@ -90,6 +96,7 @@ def play_thread(book_id, file_index=None):
 
 @app.route("/play/<book_id>")
 def play(book_id):
+    stop()
     threading.Thread(target=play_thread, args=(book_id, None)).start()
     return flask.redirect(flask.url_for("index"))
 

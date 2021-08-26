@@ -2,7 +2,7 @@
 
 {% block content %}
   <header class="w3-container w3-indigo">
-    <h2>Index</h2>
+    <h2><a href="{{ url_for('index') }}"><i class="fa fa-fw fa-bank"></i> Audiobooks</a></h2>
   </header>
 
   {% for book in books %}
@@ -11,7 +11,7 @@
     {% else %}
       {% set color = "w3-white" %}
     {% endif %}
-    <div class="w3-container w3-panel {{ color }}">
+    <div class="w3-container w3-left-bar w3-panel {{ color }}">
       <p>
         <h4><a href="{{ url_for('book', book_id=book.id) }}">{{ book.location }}</a></h4>
         {% if book.id == active_book.id %}
@@ -28,13 +28,18 @@
   {% endfor %}
 
   <div class="w3-container w3-panel w3-white">
-    <h2>Add audiobook</h2>
-    <p>
-      <label>Audiobook location:</label>
-      <input class="w3-input"></input><br/>
-      <button class="w3-btn w3-blue"><i class="fa fa-fw fa-plus"></i> Add</button>
-    </p>
-  </div>
 
+    <h2>Add audiobook</h2>
+    <form method="POST">
+      <p>
+        <label>Audiobook location:</label>
+        <input class="w3-input" type="text" name="location" minlength=2/>
+      </p>
+      <button class="w3-input w3-blue" type="Submit" name="Submit" value="Submit_add_book">
+        <i class="fa fa-fw fa-plus"></i> Add
+      </button>
+      </p>
+    </form>
+  </div>
 
 {% endblock %}

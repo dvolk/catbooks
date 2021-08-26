@@ -2,7 +2,7 @@
 
 {% block content %}
   <header class="w3-container w3-indigo">
-    <h2>Audiobook</h2>
+    <h2><a href="{{ url_for('index') }}"><i class="fa fa-fw fa-arrow-left"></i></a> Audiobook</h2>
   </header>
 
   <div class="w3-container w3-panel w3-white">
@@ -14,8 +14,8 @@
         {% else %}
           {% set color = "w3-white" %}
         {% endif %}
-      <li class="{{ color }}"><a href="{{ url_for('play_file', book_id=book.id, file_index=loop.index-1) }}">{{ f.split("/")[-1:][0] }}</a></li>
-    {% endfor %}
+        <li class="{{ color }}"><a href="{{ url_for('play_file', book_id=book.id, file_index=loop.index-1) }}">{{ f.split("/")[-1:][0] }}</a></li>
+      {% endfor %}
     </ul>
 
 {% endblock %}
