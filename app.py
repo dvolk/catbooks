@@ -21,8 +21,10 @@ class Audiobook(db.Document):
     title = db.StringField()
     location = db.StringField()
     files = db.ListField(db.StringField())
+    thumbnail_fn = db.StringField()
     play_file_index = db.IntField(default=0)
     added_epochtime = db.IntField(default=0)
+    last_played_epochtime = db.IntField(default=0)
     playing_since_epochtime = db.IntField(default=0)
     seconds_seek = db.IntField(default=0)
 
@@ -31,19 +33,34 @@ class Audiobook(db.Document):
 def index():
     if flask.request.method == "POST":
         location = flask.request.form.get("location")
-        a = Audiobook(location=location)
+        a = Audiobook(location=location, added_epochtime=int(time.time()))
         a.save()
         return flask.redirect(flask.url_for("index"))
     if flask.request.method == "GET":
-        books = Audiobook.objects
+        books = Audiobook.objects.order_by("-last_played_epochtime")
         return flask.render_template(
-            "index.jinja2", books=books, active_book=active_book, humanize=humanize
+            "index.jinja2", books=books, active_book=active_book
         )
+
+
+def set_thumbnail(book):
+    if book.thumbnail_fn and (Path("static") / book.thumbnail_fn).exists():
+        return
+    images = list(Path(book.location).glob("*.jpg"))
+    images += list(Path(book.location).glob("*.png"))
+    if images:
+        Path("static").mkdir(exist_ok=True)
+        dest = (Path("static") / images[0].name)
+        if not dest.exists():
+            dest.symlink_to(images[0].absolute())
+        book.thumbnail_fn = images[0].name
+        book.save()
 
 
 @app.route("/book/<book_id>")
 def book(book_id):
     book = Audiobook.objects.filter(id=book_id).first_or_404()
+    set_thumbnail(book)
     if not book.files:
         files = list(Path(book.location).glob("*.mp3"))
         files += list(Path(book.location).glob("*.m4b"))
@@ -55,12 +72,12 @@ def book(book_id):
 
 @app.route("/play/<book_id>/<file_index>")
 def play_file(book_id, file_index):
-    stop()
     threading.Thread(target=play_thread, args=(book_id, int(file_index))).start()
     return flask.redirect(flask.url_for("book", book_id=book_id))
 
 
 def play_thread(book_id, file_index=None):
+    stop()
     print(book_id, file_index)
     global active_book
     active_book = Audiobook.objects.filter(id=book_id).first_or_404()
@@ -74,6 +91,8 @@ def play_thread(book_id, file_index=None):
         active_book.seconds_seek = 0
     active_book.save()
     while True:
+        active_book.last_played_epochtime = int(time.time())
+        active_book.save()
         fn = list(files)[active_book.play_file_index]
         print(f"Playing {fn} {active_book.seconds_seek}")
         player.play(str(fn))
@@ -96,7 +115,6 @@ def play_thread(book_id, file_index=None):
 
 @app.route("/play/<book_id>")
 def play(book_id):
-    stop()
     threading.Thread(target=play_thread, args=(book_id, None)).start()
     return flask.redirect(flask.url_for("index"))
 
