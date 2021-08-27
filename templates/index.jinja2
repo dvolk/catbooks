@@ -9,6 +9,8 @@
   <div class="w3-container w3-left-bar w3-panel w3-card-4 w3-hover-sepia {{ color }}">
     {% if book.thumbnail_fn %}
       <img style="float: right;" src="static/{{ book.thumbnail_fn }}" height="100px" />
+    {% else %}
+      <img style="float: right;" src="static/241px-Audio_Book_Icon_1.svg.png" height="100px" />
     {% endif %}
     <p>
       <h4><a href="{{ url_for('book', book_id=book.id) }}">{{ book.location }}</a></h4>
