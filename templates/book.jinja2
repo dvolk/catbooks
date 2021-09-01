@@ -2,19 +2,55 @@
 
 {% block content %}
   <header class="w3-container w3-indigo">
-    <h2><a href="{{ url_for('index') }}"><i class="fa fa-fw fa-arrow-left"></i></a> Audiobook</h2>
+    <h2><a href="{{ url_for('index') }}"><i class="fa fa-fw fa-arrow-left"></i></a> {{ book.title }}</h2>
   </header>
+  <div class="w3-container w3-white">
+    {% if active_book and book.id == active_book.id %}
+      {% set btn_col1 = "w3-blue" %}
+      {% set btn_col2 = "w3-light-gray" %}
+    {% else %}
+      {% set btn_col1 = "w3-light-gray" %}
+      {% set btn_col2 = "w3-blue" %}
+    {% endif %}
+    <div class="w3-container w3-center">
+      <p>
+        <a href="{{ url_for('seek', amt=-15) }}">
+          <button class="w3-btn {{ btn_col1 }}"><i class="fa fa-fw fa-backward"></i></button>
+        </a>
+        <a href="{{ url_for('play', book_id=book.id) }}">
+          <button class="w3-btn {{ btn_col2 }}"><i class="fa fa-fw fa-play"></i></button>
+        </a>
+        <a href="{{ url_for('stop') }}">
+          <button class="w3-btn {{ btn_col1 }}"><i class="fa fa-fw fa-pause"></i></button>
+        </a>
+        <a href="{{ url_for('seek', amt=15) }}">
+          <button class="w3-btn {{ btn_col1 }}"><i class="fa fa-fw fa-forward"></i></button>
+        </a>
+      </p>
+    </div>
+  </div>
 
   <div class="w3-container w3-panel w3-white">
-    <h3>{{ book.location }}</h3>
+
+
+    <h3>Book notes</h3>
+    <form method="POST">
+      <textarea name="notes" class="w3-input w3-pale-yellow" width="100%" rows="5">{%- if book.notes %}{{ book.notes }}{%- else %}{% endif %}</textarea>
+      <p>
+        <button type="Submit" class="w3-btn w3-blue"><i class="fa fa-fw fa-save"></i> Save</button>
+      </p>
+    </form>
+  </div>
+  <div class="w3-container w3-panel w3-white">
+    <h3>Audio files</h3>
     <ul>
       {% for f in book.files %}
         {% if loop.index -1 == book.play_file_index %}
-          {% set color = "w3-pale-green" %}
+          {% set color = "w3-green" %}
         {% else %}
           {% set color = "w3-white" %}
         {% endif %}
-        <li class="{{ color }}"><a href="{{ url_for('play_file', book_id=book.id, file_index=loop.index-1) }}">{{ f.split("/")[-1:][0] }}</a></li>
+        <li><a class="{{ color }}" href="{{ url_for('play_file', book_id=book.id, file_index=loop.index-1) }}">{{ f.split("/")[-1:][0] }}</a></li>
       {% endfor %}
     </ul>
 

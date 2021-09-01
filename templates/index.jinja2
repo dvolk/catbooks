@@ -2,7 +2,7 @@
 
 {% macro book_item(book) %}
   {% if book.id == active_book.id %}
-    {% set color = "w3-pale-green" %}
+    {% set color = "w3-green" %}
   {% else %}
     {% set color = "w3-white" %}
   {% endif %}
@@ -13,7 +13,7 @@
       <img style="float: right;" src="static/241px-Audio_Book_Icon_1.svg.png" height="100px" />
     {% endif %}
     <p>
-      <h4><a href="{{ url_for('book', book_id=book.id) }}">{{ book.location }}</a></h4>
+      <h4><a href="{{ url_for('book', book_id=book.id) }}">{{ book.title }}</a></h4>
       {% if book.id == active_book.id %}
         <a href="{{ url_for('stop') }}"><i class="fa fa-fw fa-pause"></i></a>
       {% endif %}
@@ -35,7 +35,7 @@
   {% if active_book %}
     {{ book_item(active_book) }}
   {% endif %}
-  {% for book in books if book != active_book %}
+  {% for book in books if book != active_book and (show_all or not book.is_hidden) %}
     {{ book_item(book) }}
   {% endfor %}
 
