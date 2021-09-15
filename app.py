@@ -30,6 +30,7 @@ class Audiobook(db.Document):
     playing_since_epochtime = db.IntField(default=0)
     seconds_seek = db.IntField(default=0)
     notes = db.StringField()
+    meta = {"indexes": ["last_played_epochtime"]}
 
     def get_book_files(self):
         files = list(Path(self.location).glob("*.mp3"))
