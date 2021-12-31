@@ -3,7 +3,7 @@
 <table>
 <tr>
 <th>Audiobook index</th>
-<th>Audiobook details<th>
+<th>Audiobook details</th>
 </tr>
 <tr>
 <td><img src="https://i.imgur.com/Tnt4x6m.png"></img></td>
