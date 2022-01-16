@@ -181,6 +181,16 @@ def play(book_id):
     return flask.redirect(flask.url_for("book", book_id=book_id))
 
 
+@app.route("/toggle_play")
+def toggle_play():
+    if active_book:
+        stop()
+    else:
+        last_book = Audiobook.objects.order_by("-last_played_epochtime").first_or_404()
+        play(last_book.id)
+    return "OK"
+
+
 @app.route("/stop")
 def stop():
     global active_book
